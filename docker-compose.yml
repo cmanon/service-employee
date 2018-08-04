@@ -1,0 +1,29 @@
+version: '3'
+
+services: 
+  db:
+    container_name: service-employee-mysql
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_ROOT_HOST='%'
+      - MYSQL_DATABASE=employee
+      - MYSQL_USER=employeeuser
+      - MYSQL_PASSWORD=secret
+    healthcheck:
+      test: mysqladmin -uroot -psecret ping
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+    ports:
+      - 3306:3306
+    restart: always
+  rest-api:
+    container_name: service-employee-rest
+    image: cmanoncom/service-employee
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
